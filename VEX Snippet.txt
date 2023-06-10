@@ -1,0 +1,29 @@
+//Create rad and maxpt statements
+float rad = chf('radius');
+int maxpts = chi('maxpts');
+
+//Find close point and get pos
+vector n = v@N;
+int nearpt = nearpoint(1, v@P);
+vector pos = point(1, 'P', nearpt);
+
+//Compute axis based on close moving pt
+vector axis = cross(normalize(-pos), n);
+axis = cross(axis, n);
+
+vector dir = normalize(pos-v@P);
+
+//Find dot between dir and normal
+float bias = fit(dot(dir, n), -1, 1, 0, 1);
+bias = chramp('remap', bias);
+
+//Set direction no smooth
+vector newdir = normalize(lerp(axis, dir, bias));
+
+//Create falloff based on distance
+float dist = distance(v@P, pos);
+dist = fit(dist, 0, rad, 0, 1);
+dist = chramp('falloff', dist);
+
+//Set normals
+v@N = normalize(lerp(n, newdir, dist));
